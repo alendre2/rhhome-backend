@@ -1,11 +1,8 @@
 from flask import Flask, jsonify
 
-# Cria uma instância da aplicação Flask
 app = Flask(__name__)
 
 # --- Nosso "Banco de Dados" Temporário ---
-# No futuro, isso virá de um banco de dados de verdade.
-# Por agora, é uma lista de dicionários Python.
 leads_db = [
     {
         "id": 1,
@@ -37,22 +34,32 @@ leads_db = [
 ]
 # -----------------------------------------
 
-
 # Rota principal (página inicial)
 @app.route('/')
 def home():
     return "<h1>Backend da RH Home Imobiliária está no ar!</h1>"
 
-
-# --- NOSSA NOVA ROTA DA API ---
-# Esta rota vai retornar a lista de todos os leads
+# Rota para retornar a lista de todos os leads
 @app.route('/leads')
 def get_leads():
-    # A função 'jsonify' do Flask converte nossa lista Python para o formato JSON
-    # e prepara a resposta para o navegador. É a forma correta de retornar APIs.
     return jsonify(leads_db)
-# -----------------------------
 
+# --- NOSSA NOVA ROTA DINÂMICA ---
+# Esta rota vai buscar um lead específico pelo seu ID
+@app.route('/leads/<int:lead_id>')
+def get_lead_by_id(lead_id):
+    # Nós percorremos cada 'lead' na nossa lista 'leads_db'
+    for lead in leads_db:
+        # Verificamos se o valor da chave 'id' do lead atual é igual ao 'lead_id' que recebemos da URL
+        if lead.get('id') == lead_id:
+            # Se encontrarmos o lead, nós o retornamos como JSON e encerramos a função
+            return jsonify(lead)
+    
+    # Se o loop terminar e não encontrarmos o lead, retornamos uma mensagem de erro.
+    # O número 404 é o código de status HTTP para "Não Encontrado".
+    # Isso é muito importante para APIs profissionais.
+    return jsonify({"erro": "Lead não encontrado"}), 404
+# -----------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
