@@ -51,19 +51,12 @@ def get_lead_by_id(lead_id):
             return jsonify(lead)
     return jsonify({"error": "Lead not found"}), 404
 
-# --- NOSSA NOVA ROTA DE CRIAÇÃO ---
 # POST /leads - Adiciona um novo lead à lista
 @app.route('/leads', methods=['POST'])
 def create_lead():
-    # Pega os dados JSON que foram enviados no corpo (body) da requisição
     new_lead_data = request.get_json()
-
-    # Lógica simples para gerar um novo ID
-    # Encontra o maior ID atual e soma 1
     last_id = leads_db[-1]['id'] if leads_db else 0
     new_id = last_id + 1
-
-    # Cria o dicionário completo do novo lead
     new_lead = {
         "id": new_id,
         "nome": new_lead_data['nome'],
@@ -71,14 +64,26 @@ def create_lead():
         "telefone": new_lead_data['telefone'],
         "email": new_lead_data['email'],
         "regiao_interesse": new_lead_data['regiao_interesse'],
-        "status": "Novo"  # Todo novo lead começa com o status "Novo"
+        "status": "Novo"
     }
-
-    # Adiciona o novo lead à nossa "base de dados"
     leads_db.append(new_lead)
-
-    # Retorna o lead que acabamos de criar e o código de status 201 (Created)
     return jsonify(new_lead), 201
+
+# DELETE /leads/<id> - Deleta um lead específico
+@app.route('/leads/<int:lead_id>', methods=['DELETE'])
+def delete_lead(lead_id):
+    lead_to_delete = None
+    for lead in leads_db:
+        if lead['id'] == lead_id:
+            lead_to_delete = lead
+            break
+
+    if not lead_to_delete:
+        return jsonify({"error": "Lead not found"}), 404
+    
+    leads_db.remove(lead_to_delete)
+
+    return jsonify({"message": f"Lead with id {lead_id} has been deleted successfully."}), 200
 # -----------------------------------
 
 if __name__ == '__main__':
