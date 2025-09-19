@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -34,32 +34,52 @@ leads_db = [
 ]
 # -----------------------------------------
 
-# Rota principal (página inicial)
 @app.route('/')
 def home():
     return "<h1>Backend da RH Home Imobiliária está no ar!</h1>"
 
-# Rota para retornar a lista de todos os leads
-@app.route('/leads')
+# GET /leads - Retorna a lista de todos os leads
+@app.route('/leads', methods=['GET'])
 def get_leads():
     return jsonify(leads_db)
 
-# --- NOSSA NOVA ROTA DINÂMICA ---
-# Esta rota vai buscar um lead específico pelo seu ID
-@app.route('/leads/<int:lead_id>')
+# GET /leads/<id> - Retorna um lead específico
+@app.route('/leads/<int:lead_id>', methods=['GET'])
 def get_lead_by_id(lead_id):
-    # Nós percorremos cada 'lead' na nossa lista 'leads_db'
     for lead in leads_db:
-        # Verificamos se o valor da chave 'id' do lead atual é igual ao 'lead_id' que recebemos da URL
         if lead.get('id') == lead_id:
-            # Se encontrarmos o lead, nós o retornamos como JSON e encerramos a função
             return jsonify(lead)
-    
-    # Se o loop terminar e não encontrarmos o lead, retornamos uma mensagem de erro.
-    # O número 404 é o código de status HTTP para "Não Encontrado".
-    # Isso é muito importante para APIs profissionais.
-    return jsonify({"erro": "Lead não encontrado"}), 404
-# -----------------------------
+    return jsonify({"error": "Lead not found"}), 404
+
+# --- NOSSA NOVA ROTA DE CRIAÇÃO ---
+# POST /leads - Adiciona um novo lead à lista
+@app.route('/leads', methods=['POST'])
+def create_lead():
+    # Pega os dados JSON que foram enviados no corpo (body) da requisição
+    new_lead_data = request.get_json()
+
+    # Lógica simples para gerar um novo ID
+    # Encontra o maior ID atual e soma 1
+    last_id = leads_db[-1]['id'] if leads_db else 0
+    new_id = last_id + 1
+
+    # Cria o dicionário completo do novo lead
+    new_lead = {
+        "id": new_id,
+        "nome": new_lead_data['nome'],
+        "cpf": new_lead_data['cpf'],
+        "telefone": new_lead_data['telefone'],
+        "email": new_lead_data['email'],
+        "regiao_interesse": new_lead_data['regiao_interesse'],
+        "status": "Novo"  # Todo novo lead começa com o status "Novo"
+    }
+
+    # Adiciona o novo lead à nossa "base de dados"
+    leads_db.append(new_lead)
+
+    # Retorna o lead que acabamos de criar e o código de status 201 (Created)
+    return jsonify(new_lead), 201
+# -----------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
