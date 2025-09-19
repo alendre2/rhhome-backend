@@ -52,3 +52,22 @@ def create(lead_data):
 def delete(lead_to_delete):
     """Deletes a lead from the database."""
     _leads_db.remove(lead_to_delete)
+
+def update(lead_id, updated_data):
+    """Finds a lead by its ID and updates it with new data."""
+    #Aqui vamos encontrar primeiro o lead que vamos atualizar
+    lead_to_update = get_by_id(lead_id)
+
+    # Se o lead não for encontrado , retornaremos None
+    if not lead_to_update:
+        return None
+    
+    # Atualizamos os dados do lead encontrado com os novos dados
+    # O método update() de dicionários é perfeito para isso.
+    lead_to_update.update(updated_data)
+
+    # Garantimos que o status e o id não sejam sobrescritos se não vierem nos dados
+    # (O id nunca deve mudar)
+    lead_to_update['id'] = lead_id
+
+    return lead_to_update
