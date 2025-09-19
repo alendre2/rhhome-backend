@@ -31,7 +31,6 @@ def create(lead_data):
         phone=lead_data['phone'],
         email=lead_data['email'],
         region_of_interest=lead_data['region_of_interest']
-        # O status "Novo" já é o padrão no construtor da classe
     )
     _leads_db.append(new_lead)
     _next_id += 1
@@ -53,5 +52,6 @@ def update(lead_id, updated_data):
     return lead_to_update
 
 def delete(lead_to_delete):
+
     """Deleta um objeto Lead da base de dados."""
     _leads_db.remove(lead_to_delete)

@@ -1,12 +1,14 @@
 from flask import Flask
 # Importamos o nosso blueprint do arquivo de controller
 from controllers.lead_controller import lead_blueprint
+from controllers.broker_controller import broker_blueprint
 
 # Cria a instância da aplicação
 app = Flask(__name__)
 
 # Registra o blueprint de leads na nossa aplicação principal
 app.register_blueprint(lead_blueprint)
+app.register_blueprint(broker_blueprint)
 
 # A rota home pode continuar aqui ou ser movida para um "home_controller" no futuro
 @app.route('/')
