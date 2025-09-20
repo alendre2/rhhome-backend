@@ -1,8 +1,8 @@
-"""Initial migration with Lead and Broker tables.
+"""Creating initial database schema
 
-Revision ID: d26356643500
+Revision ID: b75dd970b8e8
 Revises: 
-Create Date: 2025-09-20 09:03:30.752223
+Create Date: 2025-09-20 09:47:36.266429
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd26356643500'
+revision = 'b75dd970b8e8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,6 +34,8 @@ def upgrade():
     sa.Column('email', sa.String(length=100), nullable=True),
     sa.Column('region_of_interest', sa.String(length=100), nullable=True),
     sa.Column('status', sa.String(length=50), nullable=False),
+    sa.Column('broker_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['broker_id'], ['broker.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('cpf')
     )

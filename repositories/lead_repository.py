@@ -22,7 +22,9 @@ def create(lead_data):
         cpf=lead_data['cpf'],
         phone=lead_data['phone'],
         email=lead_data['email'],
-        region_of_interest=lead_data['region_of_interest']
+        region_of_interest=lead_data['region_of_interest'],
+        broker_id=lead_data['broker_id'] 
+
     )
     # db.session.add() 'prepara' o objeto para ser salvo.
     db.session.add(new_lead)
