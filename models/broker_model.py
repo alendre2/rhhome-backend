@@ -1,17 +1,15 @@
-class Broker:
+from database import db
 
-    def __init__(self, id, name, creci, phone):
-
-        self.id = id
-        self.name = name
-        self.creci = creci
-        self.phone = phone
+class Broker(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    creci = db.Column(db.String(20), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
 
     def to_dict(self):
-    
-        return{
-        "id": self.id,
-        "name": self.name,
-        "creci": self.creci,
-        "phone": self.phone
+        return {
+            "id": self.id,
+            "name": self.name,
+            "creci": self.creci,
+            "phone": self.phone
         }

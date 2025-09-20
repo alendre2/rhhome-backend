@@ -1,43 +1,37 @@
-# Primeiro, importamos a classe que acabamos de criar
+from database import db
 from models.lead_model import Lead
 
-# Nossa 'base de dados' agora é uma lista de OBJETOS Lead
-_leads_db = [
-    Lead(id=1, name="Maria Joaquina", cpf="111.222.333-44", phone="8199999-1111", email="maria@email.com", region_of_interest="Boa Viagem", status="Novo"),
-    Lead(id=2, name="José Almeida", cpf="222.333.444-55", phone="8198888-2222", email="jose.a@email.com", region_of_interest="Casa Forte", status="Em Contato")
-]
-_next_id = 3
-
 def get_all():
-    """Retorna todos os leads como objetos Lead."""
-    return _leads_db
+    """
+    Retorna todos os leads do banco de dados.
+    Lead.query.all() se traduz em 'SELECT * FROM lead' e retorna uma lista de objetos Lead.
+    """
+    return Lead.query.all()
 
 def get_by_id(lead_id):
-    """Retorna um único objeto Lead pelo seu ID."""
-    for lead in _leads_db:
-        # Agora acessamos os dados como atributos de um objeto (lead.id)
-        if lead.id == lead_id:
-            return lead
-    return None
+    """
+    Retorna um único lead pelo seu ID.
+    Lead.query.get(lead_id) é uma forma otimizada de buscar pela chave primária.
+    """
+    return Lead.query.get(lead_id)
 
 def create(lead_data):
-    """Cria um novo objeto Lead e o adiciona à base de dados."""
-    global _next_id
-    # Criamos uma nova INSTÂNCIA da classe Lead, em vez de um dicionário
+    """Cria um novo lead e o salva no banco de dados."""
     new_lead = Lead(
-        id=_next_id,
         name=lead_data['name'],
         cpf=lead_data['cpf'],
         phone=lead_data['phone'],
         email=lead_data['email'],
         region_of_interest=lead_data['region_of_interest']
     )
-    _leads_db.append(new_lead)
-    _next_id += 1
+    # db.session.add() 'prepara' o objeto para ser salvo.
+    db.session.add(new_lead)
+    # db.session.commit() efetivamente salva todas as alterações preparadas no banco.
+    db.session.commit()
     return new_lead
 
 def update(lead_id, updated_data):
-    """Encontra um objeto Lead e atualiza seus atributos."""
+    """Encontra um lead e atualiza seus dados no banco."""
     lead_to_update = get_by_id(lead_id)
     if not lead_to_update:
         return None
@@ -49,9 +43,13 @@ def update(lead_id, updated_data):
     lead_to_update.region_of_interest = updated_data.get('region_of_interest', lead_to_update.region_of_interest)
     lead_to_update.status = updated_data.get('status', lead_to_update.status)
     
+    # Apenas damos o commit, pois o SQLAlchemy já sabe que o objeto foi modificado.
+    db.session.commit()
     return lead_to_update
 
 def delete(lead_to_delete):
-
-    """Deleta um objeto Lead da base de dados."""
-    _leads_db.remove(lead_to_delete)
+    """Deleta um lead do banco de dados."""
+    # db.session.delete() prepara a remoção.
+    db.session.delete(lead_to_delete)
+    # db.session.commit() efetiva a remoção.
+    db.session.commit()
