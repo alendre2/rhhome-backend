@@ -3,6 +3,8 @@ from marshmallow import ValidationError
 from database import db
 import repositories.lead_repository as lead_repository
 from schemas.lead_schema import lead_schema, leads_schema
+from flask_jwt_extended import jwt_required
+
 
 lead_blueprint = Blueprint('lead_controller', __name__)
 
@@ -22,6 +24,7 @@ def get_lead(lead_id):
     return jsonify({"error": "Lead not found"}), 404
 
 @lead_blueprint.route('/leads', methods=['POST'])
+@jwt_required()
 def create_lead():
     lead_data = request.get_json()
     try:
