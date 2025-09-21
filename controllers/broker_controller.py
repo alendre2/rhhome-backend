@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 import repositories.broker_repository as broker_repository
 
 
@@ -19,12 +20,14 @@ def get_broker(broker_id):
     return jsonify({"error": "Broker not found"}), 404
 
 @broker_blueprint.route('/brokers', methods=['POST'])
+@jwt_required()
 def create_broker():
     broker_data = request.get_json()
     new_broker = broker_repository.create(broker_data)
     return jsonify(new_broker.to_dict()), 201
 
 @broker_blueprint.route('/brokers/<int:broker_id>', methods=['PUT'])
+@jwt_required()
 def update_broker(broker_id):
     update_data = request.get_json()
     update_broker = broker_repository.update(broker_id, update_data)
@@ -33,6 +36,7 @@ def update_broker(broker_id):
     return jsonify(update_broker.to_dict()), 200
 
 @broker_blueprint.route('/brokers/<int:broker_id>', methods=['DELETE'])
+@jwt_required()
 def delete_broker(broker_id):
     broker_to_delete = broker_repository.get_by_id(broker_id)
     if not broker_to_delete:

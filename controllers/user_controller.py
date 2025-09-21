@@ -39,7 +39,7 @@ def login():
     # Verifico se o usuário existe e se a senha confere com o hash do banco
     if user and bcrypt.check_password_hash(user.password, password):
         # Se estiver tudo certo, gero um token JWT
-        access_token = create_access_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id))
         return jsonify(access_token=access_token)
 
     # Se deu errado, retorno erro de autenticação

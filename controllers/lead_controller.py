@@ -41,6 +41,7 @@ def create_lead():
     return jsonify(lead_schema.dump(new_lead)), 201
 
 @lead_blueprint.route('/leads/<int:lead_id>', methods=['PUT'])
+@jwt_required()
 def update_lead(lead_id):
     updated_data = request.get_json()
     try:
@@ -56,6 +57,7 @@ def update_lead(lead_id):
     return jsonify(lead_schema.dump(updated_lead)), 200
 
 @lead_blueprint.route('/leads/<int:lead_id>', methods=['DELETE'])
+@jwt_required()
 def delete_lead(lead_id):
     # Procuro o lead pelo ID
     lead_to_delete = lead_repository.get_by_id(lead_id)
