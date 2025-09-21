@@ -1,5 +1,7 @@
+import os
 from flask import Flask
 from flask_migrate import Migrate
+
 
 # Importo as instâncias que criamos em arquivos separados (pra organizar melhor)
 from database import db
@@ -22,7 +24,8 @@ app = Flask(__name__)
 # Chave secreta do JWT (em produção, isso deve ficar em variável de ambiente e ser bem segura)
 app.config["JWT_SECRET_KEY"] = "sua-chave-secreta-super-dificil" 
 # Configuro o banco de dados (SQLite só pra exemplo)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///project.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- INICIALIZAÇÃO DAS EXTENSÕES ---
